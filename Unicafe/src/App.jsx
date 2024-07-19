@@ -7,19 +7,26 @@ const Button = ({ handleClick, text }) => {
 const Result = ({ texto, cantidad, porcent }) => {
   if (!porcent) {
     return (
-      <p>
-        {texto} {cantidad}
-      </p>
+      <tr>
+        <td>{texto}</td>
+        <td>{cantidad}</td>
+      </tr>
     );
   }
   if (porcent && cantidad > 0) {
     return (
-      <p>
-        {texto} {cantidad}%
-      </p>
+      <tr>
+        <td>{texto}</td>
+        <td>{cantidad}%</td>
+      </tr>
     );
   }
-  return <p>{texto} 0%</p>;
+  return (
+    <tr>
+      <td>{texto}</td>
+      <td>0%</td>
+    </tr>
+  );
 };
 
 const Statistics = ({
@@ -38,14 +45,20 @@ const Statistics = ({
     getAverage > 0
   ) {
     return (
-      <>
-        <Result texto={"Good"} cantidad={good} />
-        <Result texto={"Neutral"} cantidad={neutral} />
-        <Result texto={"Bad"} cantidad={bad} />
-        <Result texto={"All"} cantidad={totalResult} />
-        <Result texto={"Positive"} cantidad={positiveComente} porcent={true} />
-        <p>Average: {getAverage}</p>
-      </>
+      <table>
+        <tbody>
+          <Result texto={"Good"} cantidad={good} />
+          <Result texto={"Neutral"} cantidad={neutral} />
+          <Result texto={"Bad"} cantidad={bad} />
+          <Result texto={"All"} cantidad={totalResult} />
+          <Result
+            texto={"Positive"}
+            cantidad={positiveComente}
+            porcent={true}
+          />
+          <Result texto={"Average"} cantidad={getAverage} />
+        </tbody>
+      </table>
     );
   }
   return <p>No feedback given</p>;
