@@ -1,12 +1,9 @@
-const Result = ({ resultPersonShow }) => {
+const Result = ({ resultPersonShow, deletePeople }) => {
   return (
-    <>
-      {resultPersonShow.map(({ name, number }) => (
-        <p key={name}>
-          {name} {number}{" "}
-        </p>
-      ))}
-    </>
+    <p>
+      {resultPersonShow.name} {resultPersonShow.number}
+      <button onClick={deletePeople}>Delete</button>
+    </p>
   );
 };
 

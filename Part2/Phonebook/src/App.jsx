@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import Result from "./components/Result";
 import AddPersonForm from "./components/AddPersonForm";
-import axios from "axios";
+import peopleService from "./services/person";
 
 function App() {
   const [persons, setPersons] = useState([]);
@@ -11,9 +11,9 @@ function App() {
   const [show, setShow] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((res) => {
-      setPersons(res.data);
-    });
+    peopleService
+      .getAllPerson()
+      .then((initialPerson) => setPersons(initialPerson));
   }, []);
 
   const addPerson = (event) => {
@@ -27,9 +27,11 @@ function App() {
     if (personExists) {
       alert(`${newName} is already added to phonebook`);
     } else {
-      setPersons(persons.concat(personObject));
-      setNewName("");
-      setNewNumber("");
+      peopleService.createPersonPhone(personObject).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName("");
+        setNewNumber("");
+      });
     }
   };
 
@@ -51,6 +53,12 @@ function App() {
 
   const resultPersonShow = filterItems(show);
 
+  const deletePeople = (id) => {
+    peopleService
+      .deletePeopleRegister(id)
+      .then(setPersons(persons.filter((person) => person.id !== id)));
+  };
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -64,7 +72,14 @@ function App() {
         handleNumber={handleNumber}
       />
       <h2>Numbers</h2>
-      <Result resultPersonShow={resultPersonShow} />
+      {resultPersonShow.map((person) => (
+        <Result
+          resultPersonShow={person}
+          deletePeople={() => deletePeople(person.id)}
+          key={person.id}
+        />
+      ))}
+      {/* <Result resultPersonShow={resultPersonShow} deletePeople={deletePeople} /> */}
     </div>
   );
 }
