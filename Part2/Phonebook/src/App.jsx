@@ -3,12 +3,14 @@ import Filter from "./components/Filter";
 import Result from "./components/Result";
 import AddPersonForm from "./components/AddPersonForm";
 import peopleService from "./services/person";
+import Notification from "./components/Notification";
 
 function App() {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [show, setShow] = useState("");
+  const [messageSuccess, setMessageSuccess] = useState(null);
 
   useEffect(() => {
     peopleService
@@ -31,6 +33,10 @@ function App() {
         setPersons(persons.concat(returnedPerson));
         setNewName("");
         setNewNumber("");
+        setMessageSuccess(`Added ${personObject.name}`);
+        setTimeout(() => {
+          setMessageSuccess(null);
+        }, 3000);
       });
     }
   };
@@ -62,6 +68,7 @@ function App() {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={messageSuccess} />
       <Filter show={show} handleShow={handleShow} />
       <h2>Add a new</h2>
       <AddPersonForm
