@@ -1,0 +1,19 @@
+{
+  "name": "backphonebook",
+  "version": "1.0.0",
+  "description": "Back end de la aplicacion echa con react de PhoneBook",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matias Torres",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

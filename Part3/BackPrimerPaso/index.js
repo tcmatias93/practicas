@@ -23,6 +23,20 @@ const generateID = () => {
   return maxId + 1;
 };
 
+const requestLogger = (req, res, next) => {
+  console.log("Method: ", req.method);
+  console.log("Path: ", req.path);
+  console.log("Body: ", req.body);
+  console.log("-----");
+  next();
+};
+
+app.use(express.json());
+app.use(requestLogger);
+
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: "Unknown endpoint" });
+};
 //Leo la pagina home
 app.get("/", (req, res) => {
   res.send("<h1>Hello World!</h1>");
@@ -57,7 +71,7 @@ app.delete("/api/notes/:id", (req, res) => {
 });
 
 //Creo una nota nueva
-app.use(express.json());
+
 app.post("/api/notes", (req, res) => {
   const body = req.body;
 
@@ -76,6 +90,8 @@ app.post("/api/notes", (req, res) => {
   notes = notes.concat(note);
   res.json(note);
 });
+
+app.use(unknownEndpoint);
 
 //Escucho por consola y selecciono el puerto
 const PORT = 3001;
