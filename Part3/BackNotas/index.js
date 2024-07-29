@@ -71,35 +71,31 @@ app.delete("/api/notes/:id", (req, res, next) => {
 });
 
 //Creo una nota nueva
-app.post("/api/notes", (req, res) => {
+app.post("/api/notes", (req, res, next) => {
   const body = req.body;
-
-  if (body.content === undefined) {
-    return res.status(400).json({
-      error: "Content missing",
-    });
-  }
 
   const note = new Note({
     content: body.content,
     important: body.important || false,
   });
 
-  note.save().then((saveNote) => {
-    res.json(saveNote);
-  });
+  note
+    .save()
+    .then((saveNote) => {
+      res.json(saveNote);
+    })
+    .catch((error) => next(error));
 });
 
 //Caso para actualizar la importancia de una nota
 app.put("/api/notes/:id", (req, res, next) => {
-  const body = req.body;
+  const { content, important } = req.body;
 
-  const note = {
-    content: body.content,
-    important: body.important,
-  };
-
-  Note.findByIdAndUpdate(req.params.id, note, { new: true })
+  Note.findByIdAndUpdate(
+    req.params.id,
+    { content, important },
+    { new: true, runValidators: true, context: "query" }
+  )
     .then((updateNote) => {
       res.json(updateNote);
     })
@@ -117,7 +113,11 @@ const errorHandler = (error, req, res, next) => {
 
   if (error.name === "CastError") {
     return res.status(400).send({ error: "Malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return res.status(400).json({ error: error.message });
   }
+
+  next(error);
 };
 app.use(errorHandler);
 

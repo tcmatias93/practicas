@@ -11,12 +11,15 @@ function App() {
   const [newNumber, setNewNumber] = useState("");
   const [show, setShow] = useState("");
   const [messageSuccess, setMessageSuccess] = useState(null);
+  const [messageError, setMessageError] = useState(null);
 
   useEffect(() => {
     peopleService
       .getAllPerson()
       .then((initialPerson) => setPersons(initialPerson));
   }, []);
+
+  console.log("persons: ", persons);
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -62,13 +65,15 @@ function App() {
   const deletePeople = (id) => {
     peopleService
       .deletePeopleRegister(id)
-      .then(setPersons(persons.filter((person) => person.id !== id)));
+      .then(setPersons(persons.filter((person) => person.id !== id)))
+      .catch((error) => setMessageError(error));
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
       <Notification message={messageSuccess} />
+      <Notification message={messageError} />
       <Filter show={show} handleShow={handleShow} />
       <h2>Add a new</h2>
       <AddPersonForm

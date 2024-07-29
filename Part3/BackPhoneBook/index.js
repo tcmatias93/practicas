@@ -60,20 +60,10 @@ app.delete("/api/persons/:id", (req, res, next) => {
     .catch((error) => next(error));
 });
 
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", (req, res, next) => {
   const body = req.body;
   //const personExisting = peopleData.find((person) => person.name === body.name);
 
-  if (!body.name) {
-    return res.status(400).json({
-      error: "Name missing",
-    });
-  }
-  /* if (personExisting) {
-    return res.status(400).json({
-      error: "name must be unique",
-    });
-  } */
   if (!body.number) {
     return res.status(400).json({
       error: "Number missing",
@@ -85,9 +75,14 @@ app.post("/api/persons", (req, res) => {
     number: body.number,
   });
 
-  person.save().then((savePerson) => {
-    res.json(savePerson);
-  });
+  person
+    .save()
+    .then((savePerson) => {
+      res.json(savePerson);
+    })
+    .catch((error) => {
+      next(error);
+    });
 });
 
 const unknownEndpoint = (req, res) => {
@@ -100,7 +95,11 @@ const errorHandler = (error, req, res, next) => {
 
   if (error.name === "CastError") {
     return res.status(400).send({ error: "Malformateed id" });
+  } else if (error.name === "ValidationError") {
+    return res.status(400).send({ error: error.message });
   }
+
+  next(error);
 };
 app.use(errorHandler);
 
