@@ -34,7 +34,9 @@ const App = () => {
     setNewNote(event.target.value);
   };
 
-  const toggleImportance = (id) => {
+  const notesToShow = showAll ? notes : notes.filter((note) => note.important);
+
+  const toggleImportanceOf = (id) => {
     const note = notes.find((n) => n.id === id);
     const changedNote = { ...note, important: !note.important };
 
@@ -43,20 +45,14 @@ const App = () => {
       .then((returnedNote) => {
         setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)));
       })
-      .catch(() => {
-        setErrorMessage(
-          `Note '${note.content}' was already removed from server`
-        );
+      .catch((error) => {
+        setErrorMessage(`Note ${note.content} was already removed from server`);
         setTimeout(() => {
           setErrorMessage(null);
         }, 5000);
         setNotes(notes.filter((n) => n.id !== id));
       });
   };
-
-  const notesToShow = showAll
-    ? notes
-    : notes.filter((note) => note.important === true);
 
   return (
     <div>
@@ -68,13 +64,15 @@ const App = () => {
         </button>
       </div>
       <ul>
-        {notesToShow.map((note) => (
-          <Note
-            key={note.id}
-            note={note}
-            toggleImportance={() => toggleImportance(note.id)}
-          />
-        ))}
+        <ul>
+          {notesToShow.map((note) => (
+            <Note
+              key={note.id}
+              note={note}
+              toggleImportance={() => toggleImportanceOf(note.id)}
+            />
+          ))}
+        </ul>
       </ul>
 
       <form onSubmit={addNote}>
