@@ -1,3 +1,5 @@
+const User = require("../models/user");
+
 const reverse = (string) => {
   return string.split("").reverse().join("");
 };
@@ -10,7 +12,13 @@ const average = (array) => {
   return array.length === 0 ? 0 : array.reduce(reducer, 0) / array.length;
 };
 
+const usersInDB = async () => {
+  const users = await User.find({});
+  return User.map((u) => u.toJSON());
+};
+
 module.exports = {
   reverse,
   average,
+  usersInDB,
 };
