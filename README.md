@@ -16,3 +16,6 @@ npm install mongoose
 para copiar una carpeta a otra
 Carpeta origon a lugar de destino
 cp -r dist ../../Part3/BackNotas
+
+paquete bcrypt para generar los hashes de contraseña:
+npm install bcrypt
