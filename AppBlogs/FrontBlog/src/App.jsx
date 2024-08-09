@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import LoginForms from "./components/LoginForms";
@@ -6,6 +6,7 @@ import loginService from "./services/login";
 import Notification from "./components/Notification";
 import BlogForms from "./components/BlogForms";
 import "./index.css";
+import ToggLabel from "./components/ToggLabel";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -17,6 +18,8 @@ const App = () => {
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
   const [successMessage, setSuccessMessage] = useState(null);
+
+  const blogFormRef = useRef();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -54,8 +57,20 @@ const App = () => {
     window.location.replace("/");
   };
 
+  const compareLikesBlogs = (a, b) => {
+    if (a.likes > b.likes) {
+      return 1;
+    }
+    if (a.likes < b.likes) {
+      return -1;
+    }
+    // a must be equal to b
+    return 0;
+  };
+
   const handleCreateBlog = (event) => {
     event.preventDefault();
+    blogFormRef.current.toggleVisibility();
     const blogObject = {
       title: title,
       author: author,
@@ -69,6 +84,17 @@ const App = () => {
       setUrl("");
       setSuccessMessage(`A new blog ${title} by ${author} added`);
     });
+  };
+
+  const toggleLikesBlog = (id) => {
+    const blog = blogs.find((n) => n.id === id);
+    const deleted = confirm(`Remove blog ${blog.title} ${blog.author}`);
+
+    if (deleted) {
+      blogService.deleteBlog(blog.id).then(() => {
+        setBlogs(blogs.filter((b) => b.id !== id));
+      });
+    }
   };
 
   return (
@@ -98,17 +124,23 @@ const App = () => {
             {user.name} logged in{" "}
             <button onClick={handleLogOut}>Log out</button>{" "}
           </p>
-          <BlogForms
-            handleCreateBlog={handleCreateBlog}
-            title={title}
-            setTitle={setTitle}
-            author={author}
-            setAuthor={setAuthor}
-            url={url}
-            setUrl={setUrl}
-          />
-          {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
+          <ToggLabel ref={blogFormRef}>
+            <BlogForms
+              handleCreateBlog={handleCreateBlog}
+              title={title}
+              setTitle={setTitle}
+              author={author}
+              setAuthor={setAuthor}
+              url={url}
+              setUrl={setUrl}
+            />
+          </ToggLabel>
+          {blogs.sort(compareLikesBlogs).map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              toggleLikesBlog={() => toggleLikesBlog(blog.id)}
+            />
           ))}
         </div>
       )}
