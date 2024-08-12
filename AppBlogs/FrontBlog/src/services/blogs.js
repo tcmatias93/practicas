@@ -34,4 +34,9 @@ const deleteBlog = (id) => {
   return response.then((res) => res.data);
 };
 
-export default { getAll, create, setToken, addLikes, deleteBlog };
+const updateBlog = (id, newObject) => {
+  const response = axios.put(`${baseUrl}/${id}`, newObject);
+  return response.then((res) => res.data);
+};
+
+export default { getAll, create, setToken, addLikes, deleteBlog, updateBlog };

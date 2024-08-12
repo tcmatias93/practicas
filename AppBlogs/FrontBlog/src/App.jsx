@@ -86,7 +86,7 @@ const App = () => {
     });
   };
 
-  const toggleLikesBlog = (id) => {
+  const toggleDeleteBlog = (id) => {
     const blog = blogs.find((n) => n.id === id);
     const deleted = confirm(`Remove blog ${blog.title} ${blog.author}`);
 
@@ -95,6 +95,24 @@ const App = () => {
         setBlogs(blogs.filter((b) => b.id !== id));
       });
     }
+  };
+
+  const toggleLikeBlog = (id) => {
+    const blog = blogs.find((n) => n.id === id);
+    const changeBlog = { ...blog, likes: blog.likes + 1 };
+
+    blogService
+      .updateBlog(id, changeBlog)
+      .then((returnedBlog) => {
+        setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)));
+      })
+      .catch(() => {
+        setErrorMessage(`Note ${blog.title} was already removed from server`);
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
+        setBlogs(blogs.filter((n) => n.id !== id));
+      });
   };
 
   return (
@@ -135,11 +153,12 @@ const App = () => {
               setUrl={setUrl}
             />
           </ToggLabel>
-          {blogs.sort(compareLikesBlogs).map((blog) => (
+          {blogs.map((blog) => (
             <Blog
               key={blog.id}
               blog={blog}
-              toggleLikesBlog={() => toggleLikesBlog(blog.id)}
+              toggleLikeBlog={() => toggleLikeBlog(blog.id)}
+              toggleDeleteBlog={() => toggleDeleteBlog(blog.id)}
             />
           ))}
         </div>
