@@ -19,3 +19,6 @@ cp -r dist ../../Part3/BackNotas
 
 paquete bcrypt para generar los hashes de contraseña:
 npm install bcrypt
+
+para intalar redux usamos:
+npm install redux
