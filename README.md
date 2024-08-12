@@ -22,3 +22,6 @@ npm install bcrypt
 
 para intalar redux usamos:
 npm install redux
+
+librería deep-freeze, que se puede usar para garantizar que el reducer se haya definido correctamente como una función inmutable.
+npm install --save-dev deep-freeze
