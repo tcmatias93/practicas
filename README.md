@@ -25,3 +25,6 @@ npm install redux
 
 librería deep-freeze, que se puede usar para garantizar que el reducer se haya definido correctamente como una función inmutable.
 npm install --save-dev deep-freeze
+
+Redux Toolkit es una librería que resuelve estos problemas comunes relacionados con Redux. La librería, por ejemplo, simplifica enormemente la configuración del store de Redux y ofrece una gran variedad de herramientas para facilitar la gestión del estado.
+npm install @reduxjs/toolkit
