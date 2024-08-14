@@ -13,11 +13,11 @@ const Notes = () => {
   const dispatch = useDispatch();
   const notes = useSelector((state) => {
     if (state.filter === "ALL") {
-      return state.notes.notes;
+      return state.notes;
     }
     return state.filter === "IMPORTANT"
-      ? state.notes.notes.filter((note) => note.important)
-      : state.notes.notes.filter((note) => !note.important);
+      ? state.notes.filter((note) => note.important)
+      : state.notes.filter((note) => !note.important);
   });
 
   return (
