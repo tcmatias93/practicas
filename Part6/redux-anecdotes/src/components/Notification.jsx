@@ -1,17 +1,4 @@
 import { useSelector } from "react-redux";
-import {
-  clearNotification,
-  setNotification,
-} from "../reducers/notificationReducer";
-
-export const showNotification = (message) => {
-  return async (dispatch) => {
-    dispatch(setNotification(message));
-    setTimeout(() => {
-      dispatch(clearNotification());
-    }, 5000);
-  };
-};
 
 const Notification = () => {
   const notification = useSelector((state) => state.notification);
@@ -21,7 +8,11 @@ const Notification = () => {
     padding: 10,
     borderWidth: 1,
   };
-  return <div style={style}>{notification}</div>;
+
+  const none = {
+    display: "none",
+  };
+  return <div style={notification ? style : none}>{notification}</div>;
 };
 
 export default Notification;
