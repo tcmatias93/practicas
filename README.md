@@ -28,3 +28,6 @@ npm install --save-dev deep-freeze
 
 Redux Toolkit es una librería que resuelve estos problemas comunes relacionados con Redux. La librería, por ejemplo, simplifica enormemente la configuración del store de Redux y ofrece una gran variedad de herramientas para facilitar la gestión del estado.
 npm install @reduxjs/toolkit
+
+instalo un servidor local
+npm install json-server --save-dev
