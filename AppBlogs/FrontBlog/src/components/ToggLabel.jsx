@@ -1,32 +1,23 @@
-import { useState, forwardRef, useImperativeHandle } from "react";
+import useVisibility from "../hooks/useVisibility";
+import React from "react";
 
-const ToggLabel = forwardRef((props, ref) => {
-  const [visible, setVisible] = useState(false);
+const ToggLabel = (props) => {
+  const [visibility, changeVisibility] = useVisibility();
 
-  const hideWhenVisible = { display: visible ? "none" : "" };
-  const showWhenVisible = { display: visible ? "" : "none" };
-
-  const toggleVisibility = () => {
-    setVisible(!visible);
-  };
-
-  useImperativeHandle(ref, () => {
-    return {
-      toggleVisibility,
-    };
-  });
+  const hideWhenVisible = { display: visibility ? "none" : "" };
+  const showWhenVisible = { display: visibility ? "" : "none" };
 
   return (
     <div>
       <div style={hideWhenVisible}>
-        <button onClick={toggleVisibility}>New note</button>
+        <button onClick={() => changeVisibility()}>New note</button>
       </div>
       <div style={showWhenVisible}>
-        {props.children}
-        <button onClick={toggleVisibility}>Cancel</button>
+        {React.cloneElement(props.children, { changeVisibility })}
+        <button onClick={() => changeVisibility()}>Cancel</button>
       </div>
     </div>
   );
-});
+};
 
 export default ToggLabel;
