@@ -31,3 +31,6 @@ npm install @reduxjs/toolkit
 
 instalo un servidor local
 npm install json-server --save-dev
+
+elimina repositorios git
+rm -rf .git
