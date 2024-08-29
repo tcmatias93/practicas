@@ -1,4 +1,4 @@
-import { Diagnoses, Gender, NewPatient } from "../data/types";
+import { Diagnoses, Gender, NewPatient, BaseEntry, Entry } from "../data/types";
 
 const isString = (text: unknown): text is string => {
   return typeof text === "string" || text instanceof String;
@@ -12,6 +12,16 @@ const isGender = (param: string): param is Gender => {
   return Object.values(Gender)
     .map((v) => v.toString())
     .includes(param);
+};
+
+const isBaseEntry = (object: any): object is BaseEntry => {
+  return (
+    object &&
+    isString(object.id) &&
+    isString(object.description) &&
+    isDate(object.date) &&
+    isString(object.specialist)
+  );
 };
 
 const parseName = (name: unknown): string => {
@@ -63,6 +73,19 @@ const parseLatin = (latin: unknown): string => {
   return latin;
 };
 
+const parseEntries = (entries: unknown): Entry[] => {
+  if (!entries || !Array.isArray(entries)) {
+    throw new Error("Incorrect or missing entries");
+  }
+
+  return entries.map((entry) => {
+    if (!isBaseEntry(entry)) {
+      throw new Error("Incorrect entry format");
+    }
+    return entry as Entry;
+  });
+};
+
 export const toNewPacient = (object: unknown): NewPatient => {
   if (!object || typeof object !== "object") {
     throw new Error("Incorrect or missing data");
@@ -79,6 +102,7 @@ export const toNewPacient = (object: unknown): NewPatient => {
       ssn: "ssn" in object ? parseSsn(object.ssn) : undefined,
       gender: parseGender(object.gender),
       occupation: parseOccupation(object.occupation),
+      entries: "entries" in object ? parseEntries(object.entries) : [],
     };
 
     return newPatient;
