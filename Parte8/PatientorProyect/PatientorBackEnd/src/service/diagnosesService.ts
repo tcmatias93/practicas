@@ -1,20 +1,20 @@
-import diagnoses from "../data/diagnoses";
-import { Diagnoses, NonLatinDiagnoses } from "../data/types";
+import Diagnoses from "../data/diagnoses";
+import { Diagnosis, NonLatinDiagnoses } from "../data/types";
 
-const getDiagnoses = (): Diagnoses[] => {
-  return diagnoses;
+const getDiagnosis = (): Diagnosis[] => {
+  return Diagnoses;
 };
 
-const getNonLatinDiagnoses = (): NonLatinDiagnoses[] => {
-  return diagnoses.map(({ code, name }) => ({ code, name }));
+const getNonLatinDiagnosis = (): NonLatinDiagnoses[] => {
+  return Diagnoses.map(({ code, name }) => ({ code, name }));
 };
 
-const addDiagnoses = (entry: Diagnoses): Diagnoses => {
-  const newDiagnoses = {
+const addDiagnosis = (entry: Diagnosis): Diagnosis => {
+  const newDiagnosis = {
     ...entry,
   };
-  diagnoses.push(newDiagnoses);
-  return newDiagnoses;
+  Diagnoses.push(newDiagnosis);
+  return newDiagnosis;
 };
 
-export default { getDiagnoses, getNonLatinDiagnoses, addDiagnoses };
+export default { getDiagnosis, getNonLatinDiagnosis, addDiagnosis };

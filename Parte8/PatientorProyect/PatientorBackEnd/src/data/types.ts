@@ -1,4 +1,4 @@
-export interface Diagnoses {
+export interface Diagnosis {
   code: string;
   name: string;
   latin?: string;
@@ -32,7 +32,7 @@ export interface BaseEntry {
   description: string;
   date: string;
   specialist: string;
-  diagnosisCodes?: Array<Diagnoses["code"]>;
+  diagnosisCodes?: Array<Diagnosis["code"]>;
 }
 
 interface HealthCheckEntry extends BaseEntry {
@@ -40,28 +40,28 @@ interface HealthCheckEntry extends BaseEntry {
   healthCheckRating: HealthCheckRating;
 }
 
-interface Discharge {
+export interface Discharge {
   date: string;
   criteria: string;
 }
 
-interface SickLeave {
+export interface SickLeave {
   startDate: string;
   endDate: string;
 }
 
-interface HospitalEntry extends BaseEntry {
+export interface HospitalEntry extends BaseEntry {
   type: "Hospital";
   discharge: Discharge;
 }
 
-interface OccupationalHealthCareEntry extends BaseEntry {
+export interface OccupationalHealthCareEntry extends BaseEntry {
   type: "OccupationalHealthCare";
   employerName: string;
   sickLeave?: SickLeave;
 }
 
-export type NonLatinDiagnoses = Omit<Diagnoses, "latin">;
+export type NonLatinDiagnoses = Omit<Diagnosis, "latin">;
 export type NonSsnPatient = Omit<Patient, "ssn">;
 export type NewPatient = Omit<Patient, "id">;
 export type Entry =
@@ -74,3 +74,5 @@ type UnionOmit<T, K extends string | number | symbol> = T extends unknown
   : never;
 
 export type EntryWithoutId = UnionOmit<Entry, "id">;
+
+export type NewHealthCheckEntry = Omit<HealthCheckEntry, "id">;

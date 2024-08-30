@@ -1,4 +1,17 @@
-import { Diagnoses, Gender, NewPatient, BaseEntry, Entry } from "../data/types";
+import {
+  Diagnosis,
+  Gender,
+  NewPatient,
+  BaseEntry,
+  Entry,
+  NewHealthCheckEntry,
+  HealthCheckRating,
+  EntryWithoutId,
+  HospitalEntry,
+  OccupationalHealthCareEntry,
+  Discharge,
+  SickLeave,
+} from "../data/types";
 
 const isString = (text: unknown): text is string => {
   return typeof text === "string" || text instanceof String;
@@ -14,13 +27,13 @@ const isGender = (param: string): param is Gender => {
     .includes(param);
 };
 
-const isBaseEntry = (object: any): object is BaseEntry => {
+export const isBaseEntry = (object: any): object is BaseEntry => {
   return (
     object &&
     isString(object.id) &&
     isString(object.description) &&
     isDate(object.date) &&
-    isString(object.specialist)
+    typeof object.specialist === "string"
   );
 };
 
@@ -86,6 +99,65 @@ const parseEntries = (entries: unknown): Entry[] => {
   });
 };
 
+const parseDiagnosisCode = (codes: unknown): Array<Diagnosis["code"]> => {
+  if (
+    !codes ||
+    !Array.isArray(codes) ||
+    !codes.every((code) => typeof code === "string")
+  ) {
+    return [] as Array<Diagnosis["code"]>;
+  }
+
+  return codes as Array<Diagnosis["code"]>;
+};
+
+const parseDescription = (description: unknown): string => {
+  if (!description || !isString(description)) {
+    throw new Error("Incorrect or missing name");
+  }
+  return description;
+};
+
+const parseHealthCheckRating = (rating: unknown): HealthCheckRating => {
+  if (
+    typeof rating !== "number" ||
+    !Object.values(HealthCheckRating).includes(rating)
+  ) {
+    throw new Error(`Value of Heaalthcheck rating incorrect: ${rating}`);
+  }
+  return rating;
+};
+
+const parseDischarge = (discharge: unknown): Discharge => {
+  if (
+    !discharge ||
+    typeof discharge !== "object" ||
+    !("date" in discharge) ||
+    !("criteria" in discharge)
+  ) {
+    throw new Error("Incorrect or missing discharge");
+  }
+  return {
+    date: parseDateOfBirth((discharge as Discharge).date),
+    criteria: parseDescription((discharge as Discharge).criteria),
+  };
+};
+
+const parseSickLeave = (sickLeave: unknown): SickLeave => {
+  if (
+    !sickLeave ||
+    typeof sickLeave !== "object" ||
+    !("startDate" in sickLeave) ||
+    !("endDate" in sickLeave)
+  ) {
+    throw new Error("Incorrect or missing sick leave");
+  }
+  return {
+    startDate: parseDateOfBirth((sickLeave as SickLeave).startDate),
+    endDate: parseDateOfBirth((sickLeave as SickLeave).endDate),
+  };
+};
+
 export const toNewPacient = (object: unknown): NewPatient => {
   if (!object || typeof object !== "object") {
     throw new Error("Incorrect or missing data");
@@ -111,17 +183,63 @@ export const toNewPacient = (object: unknown): NewPatient => {
   throw new Error("Incorrect data: same fields are missing in new Pacient");
 };
 
-export const toNewDiagnoses = (object: unknown): Diagnoses => {
+export const toNewDiagnosis = (object: unknown): Diagnosis => {
   if (!object || typeof object !== "object") {
     throw new Error("Incorrect or missing data");
   }
   if ("code" in object && "name" in object) {
-    const newDiagnose: Diagnoses = {
+    const newDiagnose: Diagnosis = {
       code: parseCode(object.code),
       name: parseName(object.name),
       latin: "latin" in object ? parseLatin(object.latin) : undefined,
     };
     return newDiagnose;
   }
-  throw new Error("Incorrect data: same fields are missing in new Diagnoses");
+  throw new Error("Incorrect data: same fields are missing in new Diagnosis");
+};
+
+export const toNewEntries = (object: unknown): EntryWithoutId => {
+  if (!object || typeof object !== "object") {
+    throw new Error("Incorrect or missing data");
+  }
+  const baseEntry = object as {
+    description: unknown;
+    date: unknown;
+    specialist: unknown;
+    diagnosisCodes?: unknown;
+    healthCheckRating?: unknown;
+    discharge?: unknown;
+    employerName?: unknown;
+    sickLeave?: unknown;
+  };
+
+  const newBaseEntry: Omit<BaseEntry, "id"> = {
+    description: parseDescription(baseEntry.description),
+    date: parseDateOfBirth(baseEntry.date),
+    specialist: parseName(baseEntry.specialist),
+    diagnosisCodes: parseDiagnosisCode(baseEntry.diagnosisCodes),
+  };
+  if ("healthCheckRating" in object) {
+    return {
+      ...newBaseEntry,
+      type: "HealthCheck",
+      healthCheckRating: parseHealthCheckRating(object.healthCheckRating),
+    } as NewHealthCheckEntry;
+  } else if ("discharge" in object) {
+    return {
+      ...newBaseEntry,
+      type: "Hospital",
+      discharge: parseDischarge(object.discharge),
+    } as HospitalEntry;
+  } else if ("employerName" in object) {
+    return {
+      ...newBaseEntry,
+      type: "OccupationalHealthCare",
+      employerName: parseName(object.employerName),
+      sickLeave:
+        "sickLeave" in object ? parseSickLeave(object.sickLeave) : undefined,
+    } as OccupationalHealthCareEntry;
+  }
+
+  throw new Error("Incorrect data: same fields are missing in new Entries");
 };

@@ -1,16 +1,16 @@
 import express from "express";
-import diagnosesService from "../service/diagnosesService";
-import { toNewDiagnoses } from "../utils";
+import DiagnosisService from "../service/diagnosesService";
+import { toNewDiagnosis } from "../utils";
 const router = express.Router();
 
 router.get("/", (_req, res) => {
-  res.send(diagnosesService.getDiagnoses());
+  res.send(DiagnosisService.getDiagnosis());
 });
 
 router.post("/", (req, res) => {
   try {
-    const newDiagnose = toNewDiagnoses(req.body);
-    const addedDiagnose = diagnosesService.addDiagnoses(newDiagnose);
+    const newDiagnose = toNewDiagnosis(req.body);
+    const addedDiagnose = DiagnosisService.addDiagnosis(newDiagnose);
     res.json(addedDiagnose);
   } catch (error) {
     let errorMessage = "Something went wrong";

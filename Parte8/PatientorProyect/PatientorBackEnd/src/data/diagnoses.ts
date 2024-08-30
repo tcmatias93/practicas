@@ -1,5 +1,5 @@
-import { Diagnoses } from "./types";
-import { toNewDiagnoses } from "../utils";
+import { Diagnosis } from "./types";
+import { toNewDiagnosis } from "../utils";
 
 const data = [
   {
@@ -79,9 +79,9 @@ const data = [
   },
 ];
 
-const diagnoses: Diagnoses[] = data.map((obj) => {
-  const object = toNewDiagnoses(obj) as Diagnoses;
+const Diagnoses: Diagnosis[] = data.map((obj) => {
+  const object = toNewDiagnosis(obj) as Diagnosis;
   object.code = obj.code;
   return object;
 });
-export default diagnoses;
+export default Diagnoses;
